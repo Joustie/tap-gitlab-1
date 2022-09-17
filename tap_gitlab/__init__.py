@@ -900,13 +900,18 @@ def do_sync():
 
     sync_site_users()
 
-    for gid in gids:
-        sync_group(gid, pids)
+    if CONFIG['get_all_projects']:
+        url = CONFIG['api_url'] + "/projects"
+            for row in gen_request(url):
+               sync_project(project['id'])
+    else:
+        for gid in gids:
+            sync_group(gid, pids)
 
-    if not gids:
-        # When not syncing groups
-        for pid in pids:
-            sync_project(pid)
+        if not gids:
+            # When not syncing groups
+            for pid in pids:
+                sync_project(pid)
 
     # Write the final STATE
     # This fixes syncing using groups, which don't emit a STATE message
@@ -926,6 +931,7 @@ def main_impl():
 
     CONFIG.update(args.config)
     CONFIG['ultimate_license'] = truthy(CONFIG['ultimate_license'])
+    CONFIG['get_all_projects'] = truthy(CONFIG['get_all_projects'])
     CONFIG['fetch_merge_request_commits'] = truthy(CONFIG['fetch_merge_request_commits'])
     CONFIG['fetch_pipelines_extended'] = truthy(CONFIG['fetch_pipelines_extended'])
     CONFIG['fetch_group_variables'] = truthy(CONFIG['fetch_group_variables'])
