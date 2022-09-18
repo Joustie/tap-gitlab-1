@@ -26,6 +26,7 @@ CONFIG = {
     'fetch_pipelines_extended': False,
     'fetch_group_variables': False,
     'fetch_project_variables': False,
+    'get_all_projects': False,
 }
 STATE = {}
 CATALOG = None
@@ -902,8 +903,9 @@ def do_sync():
 
     if CONFIG['get_all_projects']:
         url = CONFIG['api_url'] + "/projects"
-            for row in gen_request(url):
-               sync_project(project['id'])
+
+        for row in gen_request(url):
+            sync_project(row['id'])
     else:
         for gid in gids:
             sync_group(gid, pids)
@@ -931,7 +933,6 @@ def main_impl():
 
     CONFIG.update(args.config)
     CONFIG['ultimate_license'] = truthy(CONFIG['ultimate_license'])
-    CONFIG['get_all_projects'] = truthy(CONFIG['get_all_projects'])
     CONFIG['fetch_merge_request_commits'] = truthy(CONFIG['fetch_merge_request_commits'])
     CONFIG['fetch_pipelines_extended'] = truthy(CONFIG['fetch_pipelines_extended'])
     CONFIG['fetch_group_variables'] = truthy(CONFIG['fetch_group_variables'])
